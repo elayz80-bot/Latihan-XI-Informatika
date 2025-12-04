@@ -1,331 +1,391 @@
 <!doctype html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Quiz Interaktif Ceria</title>
-  <style>
-    :root{
-      --bg: #fff9e6;
-      --card: #ffffff;
-      --accent1: #ffde59;
-      --accent2: #ff6b6b;
-      --accent3: #4dd0e1;
-      --green: #4CAF50;
-      --red: #ff3b3b;
-      --muted: #666;
-      --shadow: 0 6px 20px rgba(0,0,0,0.08);
-      font-family: Inter, sans-serif;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      min-height:100vh;
-      background: linear-gradient(180deg,#fffef6,#fff9e6 60%);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:28px;
-      color:#222;
-    }
-    .wrap{
-      width:100%;
-      max-width:920px;
-      background:var(--card);
-      border-radius:14px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
-    }
-    header{
-      padding:18px 22px;
-      background:linear-gradient(90deg,var(--accent1), #ffd278);
-    }
-    header h1{margin:0;font-size:20px;color:#2b2b2b;font-weight:800}
-    .main{padding:22px}
-    .card{
-      background:white;
-      border-radius:12px;
-      padding:16px;
-      box-shadow:0 6px 18px rgba(0,0,0,0.04);
-    }
-    label{font-weight:600;color:var(--muted)}
-    input,select{
-      width:100%;padding:10px;border-radius:8px;border:1px solid #eee;margin-top:6px;
-    }
-    button{
-      background:var(--accent2);
-      color:white;
-      padding:10px 14px;
-      border-radius:10px;
-      border:none;
-      cursor:pointer;
-      font-weight:700;
-      box-shadow:0 6px 12px rgba(255,107,107,0.18);
-    }
-    button.secondary{
-      background:transparent;
-      border:1px dashed #ffd8a6;
-      color:#333;
-    }
-    .question{display:none}
-    .question.active{display:block}
-    .choice{padding:10px;border-radius:10px;border:1px solid #eee;cursor:pointer}
-    .choice.selected{background:#f0ffff;outline:3px solid rgba(77,208,225,0.2)}
-    .correct{background:#ddffdd !important;border-color:var(--green)}
-    .incorrect{background:#ffe5e5 !important;border-color:var(--red)}
-    .summary{display:none;margin-top:14px}
-    .summary.visible{display:block}
-    .scoreBox{
-      background:var(--accent3);
-      color:white;
-      padding:14px;
-      border-radius:12px;
-      font-size:20px;
-      font-weight:800;
-      text-align:center;
-      margin-bottom:12px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quiz Interaktif Ceria</title>
+
+<!-- CONFETTI LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<style>
+:root{
+  --bg: #fff8f3;
+  --card: #ffffff;
+  --accent1: #ffb3c6;
+  --accent2: #ff8fa3;
+  --accent3: #9ad0f5;
+  --green: #4CAF50;
+  --red: #ff5252;
+  --shadow: 0 6px 20px rgba(0,0,0,0.08);
+  font-family: "Poppins", sans-serif;
+}
+
+body{
+  margin:0;
+  background: linear-gradient(180deg,#fff7f2,#fff0e9);
+  min-height:100vh;
+  padding:25px;
+  display:flex;
+  justify-content:center;
+}
+
+.wrap{
+  width:100%;
+  max-width:900px;
+  background:var(--card);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
+
+header{
+  background:linear-gradient(90deg,#ffe5ec,#ffd1dc);
+  padding:20px;
+  text-align:center;
+  font-size:22px;
+  font-weight:800;
+}
+
+.main{padding:25px;}
+
+label{font-weight:600;margin-top:10px;display:block;}
+
+input{
+  width:100%;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid #eee;
+  margin-top:5px;
+}
+
+button{
+  background:var(--accent2);
+  color:white;
+  padding:12px 16px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+  margin-top:12px;
+  transition:0.2s;
+  box-shadow:0 6px 10px rgba(255,143,163,0.25);
+}
+button:hover{
+  transform:scale(1.05);
+}
+
+button.secondary{
+  background:#fff;
+  color:#444;
+  border:2px dashed #ffc9d6;
+  box-shadow:none;
+}
+
+.card{
+  background:#fff;
+  padding:18px;
+  margin-top:16px;
+  border-radius:14px;
+  box-shadow:0 6px 14px rgba(0,0,0,0.06);
+}
+
+.question{
+  display:none;
+}
+
+.question.active{
+  display:block;
+  animation:fade 0.4s ease;
+}
+
+@keyframes fade{
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+.choice{
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #eee;
+  margin-bottom:8px;
+  cursor:pointer;
+  transition:0.15s;
+}
+.choice:hover{
+  background:#fff7fa;
+}
+
+.choice.selected{background:#fff4ff;border-color:#ffb7e3;}
+
+.correct{background:#e9ffe9 !important;border-color:#5cd65c !important;}
+.incorrect{background:#ffe9e9 !important;border-color:#ff6b6b !important;}
+
+.summary{
+  display:none;
+}
+
+.summary.visible{
+  display:block;
+}
+
+.scoreBox{
+  background:var(--accent3);
+  color:white;
+  padding:20px;
+  border-radius:16px;
+  font-size:28px;
+  font-weight:800;
+  text-align:center;
+  margin-bottom:18px;
+  animation:pop 0.6s ease;
+}
+
+@keyframes pop{
+  0%{transform:scale(0.5);opacity:0;}
+  100%{transform:scale(1);opacity:1;}
+}
+
+.correctLabel{color:var(--green);font-weight:700;}
+.incorrectLabel{color:var(--red);font-weight:700;}
+</style>
 </head>
 
 <body>
 <div class="wrap">
+
 <header>
-  <h1>Quiz Interaktif — Ceria 🌞</h1>
+  Quiz Interaktif Ceria ✨
 </header>
 
 <div class="main">
 
-  <!-- SETUP -->
-  <div class="card">
-    <label>Nama / Kelompok</label>
-    <input id="participant" type="text" placeholder="Nama peserta..." />
+<!-- SETUP -->
+<div class="card">
+  <label>Nama / Kelompok</label>
+  <input type="text" id="name" placeholder="Masukkan nama..." />
 
-    <label style="margin-top:12px">Waktu per soal (30–60 detik)</label>
-    <input id="timePer" type="number" value="45" min="30" max="60" />
+  <label>Waktu per soal (30–60 detik)</label>
+  <input type="number" id="time" min="30" max="60" value="45" />
 
-    <div style="margin-top:10px;display:flex;align-items:center;gap:6px">
-      <input id="randomTime" type="checkbox" />
-      <label for="randomTime" style="margin:0">Gunakan waktu acak</label>
-    </div>
-
-    <div style="margin-top:12px;display:flex;gap:8px">
-      <button id="startBtn">Mulai Quiz</button>
-      <button class="secondary" id="resetBtn">Reset</button>
-    </div>
+  <div style="margin-top:10px;display:flex;align-items:center;gap:8px">
+    <input type="checkbox" id="randomTime" />
+    <span>Gunakan waktu acak</span>
   </div>
 
-  <!-- QUIZ -->
-  <div id="quizRoot" style="margin-top:20px"></div>
-
-  <!-- SUMMARY -->
-  <div id="summary" class="summary card">
-    <div class="scoreBox" id="scoreBox">Skor: 0%</div>
-    <div id="metaInfo" style="color:#666;font-size:14px;margin-bottom:12px"></div>
-
-    <div id="summaryList"></div>
-
-    <button id="downloadBtn" style="margin-top:14px">Download CSV</button>
-  </div>
-
+  <button id="startBtn">Mulai Quiz</button>
+  <button class="secondary" id="resetBtn">Reset</button>
 </div>
+
+<!-- QUIZ AREA -->
+<div id="quizArea" class="card"></div>
+
+<!-- SUMMARY -->
+<div id="summary" class="summary card">
+  <div id="scoreBox" class="scoreBox">Skor: 0%</div>
+  <div id="metaInfo" style="font-size:14px;color:#555;margin-bottom:12px"></div>
+  <div id="summaryList"></div>
+  <button id="downloadBtn">Download Hasil (CSV)</button>
 </div>
+
+</div></div>
 
 <script>
-// =======================
-//  SOAL + KUNCI JAWABAN
-// =======================
+// =========================
+//  SITUS QUIZ CERIA - CETJI
+// =========================
+
+// Daftar soal + kunci
 const questions = [
-  {q:"Pada gambar terlihat ...", choices:["Objek sedang diputar","Objek sedang dihapus","Objek sedang dipilih dan dapat diubah ukurannya","Objek terkunci","Objek bentuk khusus"], correct:2},
-  {q:"Jika ingin menambahkan video ...", choices:["Insert → Video","Insert → Media → YouTube","Tools → Add Video","Slide → Add Object","Format → Insert Link"], correct:0},
-  {q:"Shortcut memulai presentasi ...", choices:["Ctrl+Shift+S","Ctrl+Enter","Ctrl+F5","Shift+F5","Alt+F2"], correct:3},
-  {q:"Agar dua objek rata tengah ...", choices:["Format → Line spacing","Slide → Alignment","Arrange → Align → Center","Tools → Center Objects","Align → Auto Detect"], correct:2},
-  {q:"Transition semua slide ...", choices:["Select all → Insert transition","Slide → Change layout","View → Transition Manager","Format → Animate all","Tools → Transition editor"], correct:0},
-  {q:"Chart yang tidak tersedia ...", choices:["Bar","Line","Pie","Scatter","Waterfall"], correct:4},
-  {q:"Ikon speaker menunjukkan ...", choices:["Catatan pembicara","Audio disisipkan","Komentar baru","Sedang direkam","Animasi suara"], correct:1},
-  {q:"Duplikasi slide ...", choices:["Ctrl+D","Ctrl+Shift+N","Ctrl+Alt+S","Ctrl+L","Alt+D"], correct:0},
-  {q:"Publish to Web ...", choices:["Email tertentu","Menjadi halaman web otomatis","PDF","Classroom","Ekstensi web"], correct:1},
-  {q:"Laser pointer ...", choices:["Huruf L","Huruf P","Huruf Z","Spasi","Ctrl+L"], correct:0},
-  {q:"Simbol cuaca → abstraksi ...", choices:["Dekomposisi","Abstraksi","Perulangan","Debugging","Pengkodean"], correct:1},
-  {q:"Langkah membuat teh ...", choices:["Abstraksi","Pengenalan pola","Algoritma","Syntax","Variabel"], correct:2},
-  {q:"Game sederhana ...", choices:["Pola","Dekomp+Algoritma","Abstraksi","Looping","Input"], correct:1},
-  {q:"Urutan membuat program ...", choices:["Cycle","Algoritma","Pengembangan perangkat lunak","Pola","Deklarasi"], correct:2},
-  {q:"Nilai yang berubah ...", choices:["Konstanta","Variabel","Output","Fungsi","Tipe data"], correct:1},
-  {q:"Input() berfungsi ...", choices:["Menampilkan","Menyimpan","Mengambil input","Loop","Hitung"], correct:2},
-  {q:"Pola angka ...", choices:["11","12","13","14","15"], correct:1},
-  {q:"Aplikasi peta ...", choices:["Dekomp","Abstraksi","Iterasi","Algoritma","Perbandingan"], correct:1},
-  {q:"Langkah hitung luas ...", choices:["Fungsi","Pola","Algoritma","Abstraksi","Kondisi"], correct:2},
-  {q:"Memperbaiki kesalahan ...", choices:["Loop","Dekomp","Debugging","Abstraksi","Input"], correct:2},
+  {q:"Agar objek dapat diubah ukurannya ...", c:["Diputar","Dihapus","Dipilih (resize)","Terkunci","Bentuk khusus"], a:2},
+  {q:"Menambah video YouTube ...", c:["Insert → Video","Insert → Media → YouTube","Tools → Add Video","Slide → Object","Format → Link"], a:0},
+  {q:"Memulai presentasi dari slide ...", c:["Ctrl+Shift+S","Ctrl+Enter","Ctrl+F5","Shift+F5","Alt+F2"], a:3},
+  {q:"Rata tengah ...", c:["Format","Slide","Arrange → Align → Center","Tools","Auto"], a:2},
+  {q:"Transition semua slide ...", c:["Select all → Transition","Layout","Transition Manager","Animate all","Editor"], a:0},
+  {q:"Chart tidak tersedia ...", c:["Bar","Line","Pie","Scatter","Waterfall"], a:4},
+  {q:"Ikon speaker ...", c:["Catatan","Audio disisipkan","Komentar","Rekaman","Suara animasi"], a:1},
+  {q:"Duplikasi slide ...", c:["Ctrl+D","Ctrl+Shift+N","Ctrl+Alt+S","Ctrl+L","Alt+D"], a:0},
+  {q:"Publish to Web ...", c:["Email","Web otomatis","PDF","Classroom","Ekstensi"], a:1},
+  {q:"Laser pointer ...", c:["L","P","Z","Spasi","Ctrl+L"], a:0},
+  {q:"Simbol cuaca ...", c:["Dekomp","Abstraksi","Perulangan","Debug","Coding"], a:1},
+  {q:"Langkah membuat teh ...", c:["Abstraksi","Pola","Algoritma","Syntax","Variabel"], a:2},
+  {q:"Game sederhana ...", c:["Pola","Dekomposisi & Algoritma","Abstraksi","Loop","Input"], a:1},
+  {q:"Urutan pembuatan program ...", c:["Cycle","Algoritma","Pengembangan perangkat lunak","Pola","Deklarasi"], a:2},
+  {q:"Nilai yang bisa berubah ...", c:["Konstanta","Variabel","Output","Fungsi","Tipe data"], a:1},
+  {q:"Input() berfungsi ...", c:["Output","Simpan","Ambil input","Loop","Hitung"], a:2},
+  {q:"Pola 2,4,6,8 ...", c:["11","12","13","14","15"], a:1},
+  {q:"Aplikasi peta ...", c:["Dekomp","Abstraksi","Iterasi","Algoritma","Banding"], a:1},
+  {q:"Hitung luas ...", c:["Fungsi","Pola","Algoritma","Abstraksi","Kondisi"], a:2},
+  {q:"Perbaiki error ...", c:["Loop","Dekomp","Debug","Abstraksi","Input"], a:2},
 ];
 
-let state = {
-  idx:0,
-  answers:[],
-  timer:null,
-  timeLeft:0,
-  dur:45,
-  random:false,
-  name:""
-};
+let idx = 0;
+let answers = [];
+let timer=null;
+let timeLeft = 0;
 
-// ================================
-//  BUILD QUIZ UI
-// ================================
-const quizRoot = document.getElementById("quizRoot");
-function buildQuiz(){
-  quizRoot.innerHTML="";
-  questions.forEach((q,i)=>{
-    const div=document.createElement("div");
-    div.className="question";
-    div.id="q"+i;
-    div.innerHTML=`
-      <div style="font-weight:700;margin-bottom:6px;">Soal ${i+1}/${questions.length}</div>
-      <div style="margin-bottom:10px">${q.q}</div>
-      <div id="choices${i}"></div>
-      <div style="margin-top:12px;color:#888">Waktu tersisa: <span id="time${i}">--</span>s</div>
-    `;
-    quizRoot.appendChild(div);
+// ======================
+//  RENDER SOAL
+// ======================
+function renderQuiz(){
+  const area=document.getElementById("quizArea");
+  area.innerHTML="";
 
-    const choices = document.getElementById("choices"+i);
-    q.choices.forEach((c,j)=>{
-      const opt=document.createElement("div");
-      opt.className="choice";
-      opt.innerText=`${String.fromCharCode(65+j)}. ${c}`;
-      opt.onclick=()=> select(i,j);
-      choices.appendChild(opt);
-    });
+  const q = questions[idx];
+
+  let html = `<div><b>Soal ${idx+1}/${questions.length}</b></div>`;
+  html += `<div style="margin:10px 0">${q.q}</div>`;
+
+  q.c.forEach((t,i)=>{
+    html += `<div class="choice" onclick="choose(${i})">${String.fromCharCode(65+i)}. ${t}</div>`;
   });
+
+  html += `<div style="margin-top:10px;color:#999">Waktu tersisa: <b id='timerText'>--</b>s</div>`;
+  
+  area.innerHTML = html;
 }
 
-// ================================
+// ======================
+//  PILIH JAWABAN
+// ======================
+function choose(opt){
+  answers[idx]=opt;
+  clearInterval(timer);
+  setTimeout(()=>next(),300);
+}
+
+// ======================
 //  TIMER
-// ================================
+// ======================
 function startTimer(){
-  clearInterval(state.timer);
-  state.timeLeft = state.random ? Math.floor(Math.random()*31)+30 : state.dur;
-  state.timer=setInterval(()=>{
-    state.timeLeft--;
-    document.getElementById("time"+state.idx).innerText=state.timeLeft;
-    if(state.timeLeft<=0){
-      clearInterval(state.timer);
+  const random = document.getElementById("randomTime").checked;
+  const base = parseInt(document.getElementById("time").value || 45);
+  timeLeft = random ? Math.floor(Math.random()*31)+30 : base;
+
+  timer=setInterval(()=>{
+    timeLeft--;
+    document.getElementById("timerText").innerText=timeLeft;
+    if(timeLeft<=0){
+      clearInterval(timer);
       next();
     }
   },1000);
 }
 
-// ================================
-//  SELECT ANSWER
-// ================================
-function select(qIdx, cIdx){
-  state.answers[qIdx]=cIdx;
-
-  const all=document.querySelectorAll(`#choices${qIdx} .choice`);
-  all.forEach(x=>x.classList.remove("selected"));
-  all[cIdx].classList.add("selected");
-
-  clearInterval(state.timer);
-  setTimeout(()=>next(),300);
-}
-
-// ================================
+// ======================
 //  NEXT SOAL
-// ================================
+// ======================
 function next(){
-  document.getElementById("q"+state.idx).classList.remove("active");
-  state.idx++;
-  if(state.idx>=questions.length){
+  idx++;
+  if(idx >= questions.length){
     finish();
     return;
   }
-  document.getElementById("q"+state.idx).classList.add("active");
+  renderQuiz();
   startTimer();
 }
 
-// ================================
-//  START
-// ================================
+// ======================
+//  MULAI
+// ======================
 document.getElementById("startBtn").onclick=()=>{
-  const name=document.getElementById("participant").value.trim();
-  if(!name){alert("Isi nama dulu Ely!");return;}
-  state.name=name;
-  state.dur=parseInt(document.getElementById("timePer").value);
-  state.random=document.getElementById("randomTime").checked;
-
-  state.idx=0;
-  state.answers=[];
+  if(!document.getElementById("name").value.trim()){
+    alert("Isi nama dulu Elyy 💛");
+    return;
+  }
+  idx=0;
+  answers=[];
   document.getElementById("summary").classList.remove("visible");
-
-  buildQuiz();
-  document.getElementById("q0").classList.add("active");
+  renderQuiz();
   startTimer();
 };
 
-// ================================
-//  FINISH
-// ================================
+// ======================
+//  SELESAI
+// ======================
 function finish(){
-  clearInterval(state.timer);
+  clearInterval(timer);
+  const sum = document.getElementById("summary");
+  const list = document.getElementById("summaryList");
 
-  const summary=document.getElementById("summary");
-  const list=document.getElementById("summaryList");
   list.innerHTML="";
 
-  let benar=0;
+  let benar = 0;
 
   questions.forEach((q,i)=>{
-    const user=state.answers[i];
-    const correct=q.correct;
+    let user = answers[i];
+    let correct = q.a;
+    let status = (user===correct);
 
-    const div=document.createElement("div");
-    div.className="card";
-    div.style.marginBottom="10px";
+    if(status) benar++;
 
-    let status = (user===correct) ? "✔️ Benar" : "❌ Salah";
-    if(user===correct) benar++;
-
-    div.innerHTML=`
-      <div><b>${i+1}. ${q.q}</b></div>
-      <div style="margin-top:6px">
-        Jawaban Anda: <b>${user!=null? q.choices[user]:"(Tidak dijawab)"}</b><br>
-        Jawaban Benar: <span style="color:var(--green);font-weight:700">${q.choices[correct]}</span><br>
-        <span style="color:${user===correct?"var(--green)":"var(--red)"}">${status}</span>
+    list.innerHTML += `
+      <div class="card" style="margin-bottom:10px">
+        <b>${i+1}. ${q.q}</b><br>
+        Jawaban Anda: <span class="${status?'correctLabel':'incorrectLabel'}">
+          ${user!=null ? q.c[user] : "(Tidak dijawab)"}
+        </span><br>
+        Jawaban Benar: <span class="correctLabel">${q.c[correct]}</span><br>
+        ${status? "✔️ Benar" : "❌ Salah"}
       </div>
     `;
-
-    list.appendChild(div);
   });
 
-  let skor = Math.round((benar/questions.length)*100);
-  document.getElementById("scoreBox").innerText=`Skor: ${skor}%`;
-  document.getElementById("metaInfo").innerText=
-    `${state.name} · Benar: ${benar} · Salah: ${questions.length-benar}`;
+  const score = Math.round(benar/questions.length*100);
+  animateScore(score);
 
-  summary.classList.add("visible");
+  document.getElementById("metaInfo").innerText =
+    `${document.getElementById("name").value} · Benar: ${benar} dari ${questions.length}`;
+
+  sum.classList.add("visible");
+
+  triggerConfetti(score);
 }
 
-// ================================
-//  RESET
-// ================================
-document.getElementById("resetBtn").onclick=()=>{
-  location.reload();
-};
+// ======================
+//  ANIMASI SKOR
+// ======================
+function animateScore(final){
+  let n=0;
+  const box=document.getElementById("scoreBox");
+  let a=setInterval(()=>{
+    n++;
+    box.innerText=`Skor: ${n}%`;
+    if(n>=final) clearInterval(a);
+  },10);
+}
 
-// ================================
-// DOWNLOAD CSV
-// ================================
+// ======================
+//  CONFETTI
+// ======================
+function triggerConfetti(score){
+  if(score >= 80){
+    confetti({particleCount:120,spread:90,startVelocity:35});
+    confetti({particleCount:120,spread:90,startVelocity:25,origin:{x:0}});
+    confetti({particleCount:120,spread:90,startVelocity:25,origin:{x:1}});
+  } else if(score >= 60){
+    confetti({particleCount:60,spread:60});
+  }
+}
+
+// ======================
+//  RESET
+// ======================
+document.getElementById("resetBtn").onclick=()=>location.reload();
+
+// ======================
+//  DOWNLOAD CSV
+// ======================
 document.getElementById("downloadBtn").onclick=()=>{
-  let rows=[
-    ["Nama",state.name],
-    ["Soal","Jawaban Anda","Jawaban Benar","Status"]
-  ];
+  let rows=[["Nama",document.getElementById("name").value],["Soal","Jawaban Anda","Jawaban Benar","Status"]];
 
   questions.forEach((q,i)=>{
-    const user=state.answers[i];
-    const correct=q.correct;
+    const user=answers[i];
+    const correct=q.a;
     rows.push([
       q.q,
-      user!=null?q.choices[user]:"",
-      q.choices[correct],
+      user!=null?q.c[user]:"(Tidak dijawab)",
+      q.c[correct],
       user===correct?"Benar":"Salah"
     ]);
   });
@@ -336,10 +396,9 @@ document.getElementById("downloadBtn").onclick=()=>{
 
   let a=document.createElement("a");
   a.href=url;
-  a.download=`hasil_quiz_${state.name}.csv`;
+  a.download="hasil_quiz.csv";
   a.click();
 };
-
 </script>
 </body>
 </html>
